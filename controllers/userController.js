@@ -24,7 +24,7 @@ const register = async(req, res)=>{
 
         await user.save();
 
-        res.render('register',{message:'your registration is completed!'});
+        return res.render('register',{message:'your registration is completed!'});
     } catch (error) {
         console.log(error.message);
         
@@ -52,22 +52,24 @@ const login = async(req,res)=>{
         if(userData){
                 const passwordMatch = await bcrypt.compare(password,userData.password);
                 if(passwordMatch){
-                   req.session.user = userData;
-                   res.redirect('/dashboard');
+                    console.log("user found");
+                    req.session.user = userData;
+                    console.log("user found with session");
+                    return res.redirect('/dashboard');
                 }
                 else{
-                    res.render('login',{message:'password is Incorrect/wrong!!!'});
+                   return res.render('login',{message:'password is Incorrect/wrong!!!'});
                 }
         }
         else{
-            res.render('login',{message:'Email and password is Incorrect/wrong!!!'});
+           return res.render('login',{message:'Email and password is Incorrect/wrong!!!'});
         }
 
 
         
     } catch (error) {
         console.log(error.message)
-        
+        return res.status(500).render('login',{message:'Server Error'});
     }
 }
 
@@ -76,23 +78,23 @@ const logout = async(req,res)=>{
     try {
 
         req.session.destroy();
-        res.redirect('/');
+       return res.redirect('/');
         
     } catch (error) {
         console.log(error.message)
-        
+        return res.status(500).send('Server Error');
     }
 }
 
 
 const loadDashboard = async(req,res)=>{
     try {
-        
-        res.render('dashboard',{user:req.session.user});
+       var users = await User.find({_id:{$nin:[req.session.user._id]}});//this line used to show all users except me
+       return res.render('dashboard',{user:req.session.user , users:users});
 
     } catch (error) {
         console.log(error.message)
-        
+        return res.status(500).redirect('/');
     }
 }
 
