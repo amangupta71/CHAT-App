@@ -9,6 +9,16 @@
                     <li class="list-group-item list-group-item-dark cursor-pointer user-list">
                        <img src="<%= 'http://127.0.0.1:3000/'+users[i].image %>" alt="" width="40px" height="40px">
                         <%= users[i].name %>
+
+                        <% 
+                        if (users[i]['is_online'] == 1) { %>
+                            <sup class="online-status" id="<%= users[i]['_id'] %>-status">Online</sup>
+                          <% } 
+                          else { %>
+                            <sup class="offline-status" id="<%= users[i]['_id'] %>-status">Offline</sup>
+                          <% } %>
+                            
+
                     </li>
                 <% } %>
             <% } %>
@@ -32,12 +42,37 @@
 </div>
 
 <script>
+
+    var sender_id = '<%= user._id %>'; //here we extract id from session
+    //send id to backend 
+    var socket = io('/user-namespace',{
+        auth:{
+            token: '<%= user._id %>'
+        }
+    });
+
+
     $(document).ready(function(){
         $('.user-list').click(function(){
             $('.start-head').hide();
             $('.chat-section').show();
         })
     })
+
+    //update user online status
+    socket.on('getOnlineUser' , function(data){
+        $('#'+ data.user_id + '-status').text('Online');
+        $('#'+ data.user_id + '-status').removeClass('offline-status');
+        $('#'+ data.user_id + '-status').addClass('online-status');
+    });
+
+    //update user offline status
+    socket.on('getOfflineUser' , function(data){
+        $('#'+ data.user_id + '-status').text('Offline');
+        $('#'+ data.user_id + '-status').removeClass('online-status');
+        $('#'+ data.user_id + '-status').addClass('offline-status');
+    });
+
 </script>
 
 <%- include('layouts/footer.ejs') %>
