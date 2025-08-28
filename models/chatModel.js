@@ -4,7 +4,7 @@ var chatSchema= mongoose.Schema({
           type:mongoose.Schema.Types.ObjectId,
           ref:'User'
          },
-    reciver_id:{
+    receiver_id:{
           type:mongoose.Schema.Types.ObjectId,
           ref:'User'
          },
