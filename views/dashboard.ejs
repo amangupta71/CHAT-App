@@ -8,7 +8,7 @@
       <% if (users.length > 0) { %>
         <% users.forEach(function(u) { %>
           <li class="list-group-item list-group-item-dark cursor-pointer user-list" data-id="<%= u._id %>">
-            <img src="<%= 'http://127.0.0.1:3000/' + u.image %>" alt="" width="40" height="40">
+           <!-- <img src="<%= 'http://127.0.0.1:3000/' + u.image %>" alt="" width="40" height="40"> -->
             <%= u.name %>
             <sup class="<%= u.is_online == 1 ? 'online-status' : 'offline-status' %>" id="<%= u._id %>-status">
               <%= u.is_online == 1 ? 'Online' : 'Offline' %>
