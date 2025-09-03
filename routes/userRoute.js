@@ -41,16 +41,34 @@ const userController = require('../controllers/userController');
 //middleware
 const auth = require('../middlewares/auth');
 
+user_route.get('/', auth.isLogout, (req, res) => {
+  res.render('home');     // Render the new homepage with buttons
+});
+
 user_route.get('/register', auth.isLogout, userController.registerLoad);
 //user_route.post('/register',upload.single('image'), userController.register);
 user_route.post('/register', userController.register);
 
 
-user_route.get('/',auth.isLogout,userController.loadlogin);
-user_route.post('/',userController.login);
+user_route.get('/login',auth.isLogout,userController.loadlogin);
+user_route.post('/login',userController.login);
+
+
 user_route.get('/logout', auth.isLogin,userController.logout);
 
-user_route.get('/dashboard',auth.isLogin,userController.loadDashboard);
+const User = require('../models/userModel'); // add this at the top of your route file
+
+user_route.get('/dashboard', auth.isLogin, async (req, res) => {
+  try {
+    // fetch all users except current logged in user
+    const users = await User.find({ _id: { $nin: [req.session.user._id] } });
+    res.render('dashboard', { user: req.session.user, users: users, showSlider: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+});
+
 
 user_route.post('/save-chat', userController.saveChat)
 
@@ -58,6 +76,8 @@ user_route.post('/save-chat', userController.saveChat)
 user_route.get('/*all', function(req, res) {
     res.redirect('/');
   });
+
+  
 
 
 module.exports = user_route;

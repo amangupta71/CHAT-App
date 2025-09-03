@@ -1,63 +1,210 @@
 <%- include('layouts/header.ejs') %>
 
-<h2 class="mb-4">Hi, <%= user.name %></h2>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+  }
+  h2 {
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #222;
+  }
+  .row {
+    display: flex;
+    gap: 20px;
+  }
+  .user-list-container {
+    flex: 1;
+    max-width: 280px;
+    background: #4a90e2;
+    border-radius: 15px;
+    padding: 20px;
+    height: 80vh;
+    overflow-y: auto;
+    color: white;
+    box-shadow: 0 8px 20px rgba(74,144,226,0.4);
+  }
+  ul.list-group {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li.list-group-item {
+    padding: 12px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    background-color: rgba(255,255,255,0.15);
+  }
+  li.list-group-item:hover {
+    background-color: rgba(255,255,255,0.3);
+  }
+  li.list-group-item.active {
+    background-color: #ff6f61;
+  }
+  sup.online-status {
+    color: #34c759;
+    font-weight: 700;
+  }
+  sup.offline-status {
+    color: #ff3b30;
+    font-weight: 700;
+  }
+
+  .chat-container {
+    flex: 1.5;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .chat-header {
+    font-weight: 700;
+    font-size: 1.4rem;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #eee;
+    margin-bottom: 15px;
+    color: #333;
+  }
+
+  .start-head {
+    font-size: 1.3rem;
+    color: #999;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  #chat-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+    margin-bottom: 15px;
+  }
+  .current-user-chat, .distance-user-chat {
+    max-width: 60%;
+    border-radius: 20px;
+    padding: 10px 18px;
+    margin-bottom: 12px;
+    word-wrap: break-word;
+    font-size: 1rem;
+  }
+  .current-user-chat {
+    background-color: #93e585;
+    color: white;
+    align-self: flex-end;
+    box-shadow: 0 5px 10px rgba(255,111,97,0.4);
+  }
+  .distance-user-chat {
+    background-color: #6a59d6;
+    color: #333;
+    align-self: flex-start;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  }
+  #chat-form {
+    display: flex;
+    gap: 15px;
+  }
+  #message {
+    flex-grow: 1;
+    padding: 14px;
+    font-size: 1rem;
+    border: 2px solid #4a90e2;
+    border-radius: 15px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  #message:focus {
+    border-color: #93e585;
+    box-shadow: 0 0 8px #ff6f61;
+  }
+  #chat-form input[type="submit"] {
+    background-color: #ff6f61;
+    color: white;
+    border: none;
+    padding: 14px 35px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 8px 20px rgba(255,111,97,0.5);
+  }
+  #chat-form input[type="submit"]:hover {
+    background-color: #e55a4a;
+  }
+</style>
+
+<h2>Hi, <%= user.name %></h2>
 
 <div class="row">
-  <div class="col-md-3">
+  <div class="user-list-container">
     <ul class="list-group">
       <% if (users.length > 0) { %>
         <% users.forEach(function(u) { %>
-          <li class="list-group-item list-group-item-dark cursor-pointer user-list" data-id="<%= u._id %>">
-           <!-- <img src="<%= 'http://127.0.0.1:3000/' + u.image %>" alt="" width="40" height="40"> -->
-            <%= u.name %>
+          <li class="list-group-item user-list" data-id="<%= u._id %>">
+            <span><%= u.name %></span>
             <sup class="<%= u.is_online == 1 ? 'online-status' : 'offline-status' %>" id="<%= u._id %>-status">
               <%= u.is_online == 1 ? 'Online' : 'Offline' %>
             </sup>
           </li>
         <% }) %>
+      <% } else { %>
+        <p>No users available.</p>
       <% } %>
     </ul>
   </div>
 
-  <div class="col-md-9">
-    <h3 class="start-head">Click to start the chat</h3>
-    <div class="chat-section" style="display:none;">
-      <div id="chat-container">
-        <!-- <div class = "current-user-chat">
-          <h5>Hii</h5>
-        </div>
-        <div class = "distance-user-chat">
-          <h5>Hii</h5>
-        </div> -->
-      </div>
-      <form id="chat-form">
-        <input type="text" name="message" placeholder="Enter Message" id="message" class="border" required>
-        <input type="submit" value="Send" class="btn btn-primary">
-      </form>
+  <div class="chat-container">
+    <div class="chat-header" id="chatHeader">
+      Please select a user to start chatting
     </div>
+
+    <div id="chat-container"></div>
+
+    <form id="chat-form" style="display:none;">
+      <input type="text" name="message" placeholder="Enter message" id="message" required autocomplete="off">
+      <input type="submit" value="Send">
+    </form>
   </div>
 </div>
 
 <script>
   var sender_id = '<%= user._id %>';
   var receiver_id;
+  var receiver_name;
 
   var socket = io('/user-namespace', {
-    auth: {
-      token: sender_id
-    }
+    auth: { token: sender_id }
   });
 
   $(document).ready(function () {
     $('.user-list').click(function () {
-      receiver_id = $(this).data('id');
-      $('.start-head').hide();
-      $('.chat-section').show();
+      $('.user-list').removeClass('active');
+      $(this).addClass('active');
 
-      socket.emit('existsChat',{sender_id :sender_id, receiver_id:receiver_id});
+      receiver_id = $(this).data('id');
+      receiver_name = $(this).find('span').text();
+
+      $('#chatHeader').text('Chatting with ' + receiver_name);
+      $('.start-head').hide();
+      $('#chat-form').show();
+      $('#chat-container').html('');
+
+      socket.emit('existsChat', { sender_id: sender_id, receiver_id: receiver_id });
     });
 
-    // brodcast user online
     socket.on('getOnlineUser', function (data) {
       $('#' + data.user_id + '-status')
         .text('Online')
@@ -65,20 +212,17 @@
         .addClass('online-status');
     });
 
-    // broadcast user offline
     socket.on('getOfflineUser', function (data) {
       $('#' + data.user_id + '-status')
         .text('Offline')
         .removeClass('online-status')
         .addClass('offline-status');
     });
-    
-    // broadcast chat
-    socket.on('newChat', function(data){
-        socket.broadcast.emit('loadNewChat', data);
-    })
 
-    // Chat form submission
+    socket.on('newChat', function (data) {
+      socket.broadcast.emit('loadNewChat', data);
+    });
+
     $('#chat-form').submit(function (event) {
       event.preventDefault();
 
@@ -87,25 +231,15 @@
       $.ajax({
         url: '/save-chat',
         type: 'POST',
-        data: {
-          sender_id: sender_id,
-          receiver_id: receiver_id,
-          message: message
-        },
+        data: { sender_id: sender_id, receiver_id: receiver_id, message: message },
         success: function (response) {
           if (response.success) {
             $('#message').val('');
             let chat = response.data.message;
-            let html  = `
-             <div class = "current-user-chat">
-             <h5> ` +chat+` </h5>
-             <diV>
-             `;
+            let html = `<div class="current-user-chat"><h5>${chat}</h5></div>`;
             $('#chat-container').append(html);
-            socket.emit('newChat',response.data);
-
+            socket.emit('newChat', response.data);
             scrollChat();
-
           } else {
             alert(response.msg);
           }
@@ -114,55 +248,30 @@
     });
   });
 
-   
-  //load new chat
-  socket.on('loadNewChat', function(data){
-    if(sender_id == data.receiver_id && receiver_id == data.sender_id){
-
-      let html  = `
-      <div class = "disatance-user-chat">
-        <h5> ` +data.message+` </h5>
-        <diV>
-      `;
-      $('#chat-container').append(html);      
+  socket.on('loadNewChat', function (data) {
+    if (sender_id == data.receiver_id && receiver_id == data.sender_id) {
+      let html = `<div class="distance-user-chat"><h5>${data.message}</h5></div>`;
+      $('#chat-container').append(html);
+      scrollChat();
     }
+  });
+
+  socket.on('loadChats', function (data) {
+    $('#chat-container').html('');
+    let chats = data.chats;
+    let html = '';
+    for (let x = 0; x < chats.length; x++) {
+      let addClass = chats[x].sender_id == sender_id ? 'current-user-chat' : 'distance-user-chat';
+      html += `<div class="${addClass}"><h5>${chats[x].message}</h5></div>`;
+    }
+    $('#chat-container').append(html);
     scrollChat();
   });
 
-  // load old chats
-   socket.on('loadChats', function(data){
-    $('#chat-container').html(''); //clear old chats
-
-    var chats = data.chats;
-
-    let html = '';
-    for(let x = 0; x < chats.length ; x++){
-          let addClass = '';
-          if(chats[x]['sender_id'] == sender_id){
-                addClass = 'current-user-chat';
-          }
-          else{
-            addclass = 'distance-user-chat';
-          }
-
-          html +=`
-          <div class="${addClass}">
-            <h5>`+chats[x]['message']+`</h5>
-          </div>
-          `;
-        }
-
-          $('#chat-container').append(html);
-          scrollChat();
-    
-   });
-
-   //scroll bar 
- function scrollChat(){
-  let chatContainer = $('#chat-container')[0]; // raw DOM element
-  chatContainer.scrollTop = chatContainer.scrollHeight;
-}
-
+  function scrollChat() {
+    let chatContainer = $('#chat-container')[0];
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
 </script>
 
 <%- include('layouts/footer.ejs') %>

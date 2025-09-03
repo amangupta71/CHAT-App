@@ -2,7 +2,7 @@ require('dotenv').config();
 
 var mongoose = require('mongoose');
 
-mongoose.connect(process.env.MONGO_URL);
+
 
 const app = require('express')();
 
@@ -10,6 +10,22 @@ const http = require('http').Server(app);
 
 const User = require('./models/userModel');  //for socket 
 const Chat = require('./models/chatModel'); // to load old chat
+
+mongoose.set('debug', true);
+mongoose.connect(process.env.MONGO_URL,{ serverSelectionTimeoutMS: 10000 })
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => {console.error('MongoDB connection error:', err);
+    process.exit(1);
+});
+
+const session = require('express-session');
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your_default_secret_here',
+  resave: false,
+  saveUninitialized: false,
+}));
+
 
 const userRoute = require('./routes/userRoute');
 app.use('/',userRoute); //define as middleware

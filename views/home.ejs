@@ -1,0 +1,86 @@
+<%- include('layouts/header.ejs') %>
+
+<style>
+  /* Reset default margin and padding on html and body */
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;  /* Hide ALL scrollbars */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(270deg, #667eea, #764ba2, #6a11cb);
+    background-size: 600% 600%;
+    animation: gradientAnimation 15s ease infinite;
+    color: white;
+  }
+
+  @keyframes gradientAnimation {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 60px 40px;
+    border-radius: 20px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+  }
+
+  h1 {
+    font-size: 2.8rem;
+    margin-bottom: 50px;
+    text-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  }
+
+  .btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  a.button {
+    font-size: 1.2rem;
+    padding: 15px 38px;
+    border-radius: 12px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  a.button.register {
+    background: linear-gradient(90deg, #36d1dc, #5b86e5);
+  }
+
+  a.button.login {
+    background: linear-gradient(90deg, #11998e, #38ef7d);
+  }
+
+  a.button:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+  }
+</style>
+
+<div class="container">
+  <h1>Welcome to Dynamic Chat Application</h1>
+  <div class="btn-group">
+    <a href="/register" class="button register" aria-label="Register">Register</a>
+    <a href="/login" class="button login" aria-label="Login">Login</a>
+  </div>
+</div>
+
+<%- include('layouts/footer.ejs') %>

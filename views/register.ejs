@@ -1,17 +1,81 @@
-<h1>Register</h1>
+<%- include('layouts/header.ejs') %>
 
-<form action="" method="POST" > <!--enctype="multipart/form-data" -->
+<style>
+  body {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+  }
+  .form-container {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 40px 50px;
+    border-radius: 18px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+    width: 350px;
+    text-align: center;
+  }
+  h1 {
+    margin-bottom: 30px;
+    font-size: 2.4rem;
+    text-shadow: 0 3px 6px rgba(0,0,0,0.25);
+  }
+  .message {
+    color: #90ee90;
+    margin-bottom: 15px;
+    font-weight: 600;
+  }
+  input[type=text], input[type=email], input[type=password] {
+    width: 100%;
+    padding: 12px 14px;
+    margin: 10px 0 20px 0;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease;
+  }
+  input[type=text]:focus, input[type=email]:focus, input[type=password]:focus {
+    outline: none;
+    box-shadow: 0 0 10px #5b86e5;
+  }
+  input[type=submit] {
+    width: 100%;
+    padding: 12px 14px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #36d1dc, #5b86e5);
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(53, 145, 255, 0.6);
+    transition: background 0.3s ease;
+  }
+  input[type=submit]:hover {
+    background: linear-gradient(90deg, #5b86e5, #36d1dc);
+  }
+</style>
 
+<div class="form-container">
+  <h1>Register</h1>
+
+  <% if (typeof message !== 'undefined') { %>
+    <div class="message"><%= message %></div>
+  <% } %>
+
+  <form action="/register" method="POST">
     <input type="text" name="name" placeholder="Enter Name" required>
-    <br><br>
     <input type="email" name="email" placeholder="Enter Email" required>
-    <br><br>
     <input type="password" name="password" placeholder="Enter password" required>
-    <br><br>
     <input type="submit" value="Register">
+  </form>
+</div>
 
-</form>
-
-<% if (typeof message !== 'undefined') { %>
-    <p style="color:green;"><%= message %></p>
-<% } %>
+<%- include('layouts/footer.ejs') %>
