@@ -41,7 +41,7 @@ const userController = require('../controllers/userController');
 //middleware
 const auth = require('../middlewares/auth');
 
-user_route.get('/register',  userController.registerLoad);
+user_route.get('/register', auth.isLogout, userController.registerLoad);
 user_route.post('/register',upload.single('image'), userController.register);
 
 user_route.get('/',auth.isLogout,userController.loadlogin);
@@ -50,7 +50,7 @@ user_route.get('/logout', auth.isLogin,userController.logout);
 
 user_route.get('/dashboard',auth.isLogin,userController.loadDashboard);
 
-user_route.post('/save-chat',userController.saveChat);
+user_route.post('/save-chat', userController.saveChat)
 
 //if user any thing which is not defined then it goes to login page
 user_route.get('/*all', function(req, res) {

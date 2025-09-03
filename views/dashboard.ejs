@@ -22,7 +22,14 @@
   <div class="col-md-9">
     <h3 class="start-head">Click to start the chat</h3>
     <div class="chat-section" style="display:none;">
-      <div id="chat-container"></div>
+      <div id="chat-container">
+        <!-- <div class = "current-user-chat">
+          <h5>Hii</h5>
+        </div>
+        <div class = "distance-user-chat">
+          <h5>Hii</h5>
+        </div> -->
+      </div>
       <form id="chat-form">
         <input type="text" name="message" placeholder="Enter Message" id="message" class="border" required>
         <input type="submit" value="Send" class="btn btn-primary">
@@ -46,9 +53,11 @@
       receiver_id = $(this).data('id');
       $('.start-head').hide();
       $('.chat-section').show();
+
+      socket.emit('existsChat',{sender_id :sender_id, receiver_id:receiver_id});
     });
 
-    // Update user online
+    // brodcast user online
     socket.on('getOnlineUser', function (data) {
       $('#' + data.user_id + '-status')
         .text('Online')
@@ -56,13 +65,18 @@
         .addClass('online-status');
     });
 
-    // Update user offline
+    // broadcast user offline
     socket.on('getOfflineUser', function (data) {
       $('#' + data.user_id + '-status')
         .text('Offline')
         .removeClass('online-status')
         .addClass('offline-status');
     });
+    
+    // broadcast chat
+    socket.on('newChat', function(data){
+        socket.broadcast.emit('loadNewChat', data);
+    })
 
     // Chat form submission
     $('#chat-form').submit(function (event) {
@@ -81,11 +95,17 @@
         success: function (response) {
           if (response.success) {
             $('#message').val('');
-            $('#chat-container').append(`
-              <div class="current-user-chat">
-                <h5>${response.data.message}</h5>
-              </div>
-            `);
+            let chat = response.data.message;
+            let html  = `
+             <div class = "current-user-chat">
+             <h5> ` +chat+` </h5>
+             <diV>
+             `;
+            $('#chat-container').append(html);
+            socket.emit('newChat',response.data);
+
+            scrollChat();
+
           } else {
             alert(response.msg);
           }
@@ -93,6 +113,56 @@
       });
     });
   });
+
+   
+  //load new chat
+  socket.on('loadNewChat', function(data){
+    if(sender_id == data.receiver_id && receiver_id == data.sender_id){
+
+      let html  = `
+      <div class = "disatance-user-chat">
+        <h5> ` +data.message+` </h5>
+        <diV>
+      `;
+      $('#chat-container').append(html);      
+    }
+    scrollChat();
+  });
+
+  // load old chats
+   socket.on('loadChats', function(data){
+    $('#chat-container').html(''); //clear old chats
+
+    var chats = data.chats;
+
+    let html = '';
+    for(let x = 0; x < chats.length ; x++){
+          let addClass = '';
+          if(chats[x]['sender_id'] == sender_id){
+                addClass = 'current-user-chat';
+          }
+          else{
+            addclass = 'distance-user-chat';
+          }
+
+          html +=`
+          <div class="${addClass}">
+            <h5>`+chats[x]['message']+`</h5>
+          </div>
+          `;
+        }
+
+          $('#chat-container').append(html);
+          scrollChat();
+    
+   });
+
+   //scroll bar 
+ function scrollChat(){
+  let chatContainer = $('#chat-container')[0]; // raw DOM element
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
 </script>
 
 <%- include('layouts/footer.ejs') %>

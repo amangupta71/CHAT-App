@@ -8,7 +8,8 @@ const app = require('express')();
 
 const http = require('http').Server(app);
 
-const User = require('./models/userModel');//for socket 
+const User = require('./models/userModel');  //for socket 
+const Chat = require('./models/chatModel'); // to load old chat
 
 const userRoute = require('./routes/userRoute');
 app.use('/',userRoute); //define as middleware
@@ -33,9 +34,25 @@ usp.on('connection', async function(socket){
 
     socket.broadcast.emit('getOfflineUser',{user_id: userId});
 
-
     });
-});
+
+
+    //chatting implementation
+    socket.on('newChat', function(data){
+        socket.broadcast.emit('loadNewChat',data);
+    });
+
+    // load old chat
+    socket.on('existsChat', async function(data){
+          var chats =  await Chat.find({$or:[
+                { sender_id : data.sender_id,receiver_id: data.receiver_id },
+                { sender_id : data.receiver_id,receiver_id: data.sender_id },
+            ]});
+            socket.emit('loadChats',{chats:chats});
+    });
+    });
+
+
 
 http.listen(3000, function(){
     console.log('Server is running');
